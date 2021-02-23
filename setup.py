@@ -17,27 +17,29 @@
 
 from setuptools import setup, Extension
 
-quadopt = Extension('fontcrunch._quadopt',
-                    sources=['fontcrunch/quadopt.i', 'fontcrunch/quadopt.cc'],
-                    swig_opts=['-c++', '-modern'],
-                    extra_compile_args=['-std=c++11', '-O3'])
+quadopt = Extension(
+    "fontcrunch._quadopt",
+    sources=["fontcrunch/quadopt.i", "fontcrunch/quadopt.cc"],
+    swig_opts=["-c++", "-modern"],
+    extra_compile_args=["-std=c++11", "-O3"],
+)
 
 setup(
     name="FontCrunch",
-    version='0.1',
-    url='https://github.com/googlefonts/fontcrunch/',
-    description='fontcrunch',
-    author='Raph Levien',
+    version="0.1",
+    url="https://github.com/googlefonts/fontcrunch/",
+    description="fontcrunch",
+    author="Raph Levien",
     packages=["fontcrunch"],
-    scripts=['tools/font-crunch'],
+    scripts=["tools/font-crunch"],
     zip_safe=False,
     classifiers=[
-        'Environment :: Console',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: Apache Software License',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
+        "Environment :: Console",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: Apache Software License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
     ],
     ext_modules=[quadopt],
-    py_modules=['fontcrunch.quadopt'],
+    py_modules=["fontcrunch.quadopt"],
 )
