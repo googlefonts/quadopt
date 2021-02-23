@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import argparse
 from os import path
 from fontcrunch import optimize
@@ -40,3 +38,7 @@ if __name__ == "__main__":
     )
 
     main(parser.parse_args())
+
+
+if __name__ == "__main__":
+    main()
