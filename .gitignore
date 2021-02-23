@@ -29,5 +29,6 @@ bez
 .idea
 build/
 dist/
+.eggs/
 *.egg-info/
-/fontcrunch/quadopt_wrap.cpp
+src/fontcrunch/_version.py
