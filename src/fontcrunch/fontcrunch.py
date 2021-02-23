@@ -21,7 +21,8 @@ from fontTools.pens.basePen import BasePen
 from fontTools.ttLib.tables import _g_l_y_f
 import math
 
-from . import quadopt
+from . import _quadopt as quadopt
+
 
 class PDFPen(BasePen):
     def __init__(self, glyphSet, path):
@@ -29,17 +30,17 @@ class PDFPen(BasePen):
         self.path = path
 
     def _moveTo(self, p):
-        (x,y) = p
-        self.path.moveTo(x,y)
+        (x, y) = p
+        self.path.moveTo(x, y)
 
     def _lineTo(self, p):
-        (x,y) = p
-        self.path.lineTo(x,y)
+        (x, y) = p
+        self.path.lineTo(x, y)
 
     def _curveToOne(self, p1, p2, p3):
-        (x1,y1) = p1
-        (x2,y2) = p2
-        (x3,y3) = p3
+        (x1, y1) = p1
+        (x2, y2) = p2
+        (x3, y3) = p3
         self.path.curveTo(x1, y1, x2, y2, x3, y3)
 
 
@@ -57,15 +58,15 @@ def glyph_to_bzs(g):
         flags = g.flags[beg:end]
         bz = []
         for j in range(n):
-            x1, y1 = pts[(j+1) % n]
-            if flags[j] and flags[(j+1) % n]:
+            x1, y1 = pts[(j + 1) % n]
+            if flags[j] and flags[(j + 1) % n]:
                 bz.append((pts[j], (x1, y1)))
             elif not flags[j]:
                 if flags[j - 1]:
                     x0, y0 = pts[j - 1]
                 else:
                     x0, y0 = lerppt(0.5, pts[j - 1], pts[j])
-                if not flags[(j+1) % n]:
+                if not flags[(j + 1) % n]:
                     x1, y1 = lerppt(0.5, (x1, y1), pts[j])
                 if tuple(pts[j]) == (x0, y0) or tuple(pts[j]) == (x1, y1):
                     # degenerate quad, treat as line
@@ -74,6 +75,7 @@ def glyph_to_bzs(g):
                     bz.append(((x0, y0), pts[j], (x1, y1)))
         bzs.append(bz)
     return bzs
+
 
 def segment_sp(sp):
     bks = set()
@@ -90,13 +92,15 @@ def segment_sp(sp):
             xsg = xsg1
             ysg = ysg1
         else:
-            if xsg == 0: xsg = xsg1
-            if ysg == 0: ysg = ysg1
+            if xsg == 0:
+                xsg = xsg1
+            if ysg == 0:
+                ysg = ysg1
 
     # angle breaks
     for i in range(len(sp)):
-        dx0 = sp[i-1][-1][0] - sp[i-1][-2][0]
-        dy0 = sp[i-1][-1][1] - sp[i-1][-2][1]
+        dx0 = sp[i - 1][-1][0] - sp[i - 1][-2][0]
+        dy0 = sp[i - 1][-1][1] - sp[i - 1][-2][1]
         dx1 = sp[i][1][0] - sp[i][0][0]
         dy1 = sp[i][1][1] - sp[i][0][1]
         bend = dx1 * dy0 - dx0 * dy1
@@ -110,6 +114,7 @@ def segment_sp(sp):
 
     return sorted(bks)
 
+
 def seg_to_string(sp, bk0, bk1):
     if bk1 < bk0:
         bk1 += len(sp)
@@ -119,8 +124,9 @@ def seg_to_string(sp, bk0, bk1):
         if len(bz) == 2:
             # just represent lines as quads
             bz = (bz[0], lerppt(0.5, bz[0], bz[1]), bz[1])
-        res.append(' '.join(['%g' % z for xy in bz for z in xy]) + '\n')
-    return ''.join(res)
+        res.append(" ".join(["%g" % z for xy in bz for z in xy]) + "\n")
+    return "".join(res)
+
 
 def optimize_glyph(glyph, penalty=None):
     bzs = glyph_to_bzs(glyph)
@@ -142,6 +148,7 @@ def optimize_glyph(glyph, penalty=None):
         newbzs.append(newsp)
     bzs_to_glyph(newbzs, glyph)
 
+
 def read_bzs(segstr):
     result = []
     for l in segstr.split("\n"):
@@ -152,9 +159,11 @@ def read_bzs(segstr):
         result.append(bz)
     return result
 
+
 def pt_to_int(pt):
     # todo: should investigate non-int points
     return (int(round(pt[0])), int(round(pt[1])))
+
 
 def bzs_to_glyph(bzs, glyph):
     coordinates = []
@@ -164,7 +173,11 @@ def bzs_to_glyph(bzs, glyph):
         for i in range(len(sp)):
             lastbz = sp[i - 1]
             bz = sp[i]
-            if len(bz) != 3 or len(lastbz) != 3 or lerppt(0.5, lastbz[1], bz[1]) != bz[0]:
+            if (
+                len(bz) != 3
+                or len(lastbz) != 3
+                or lerppt(0.5, lastbz[1], bz[1]) != bz[0]
+            ):
                 coordinates.append(pt_to_int(bz[0]))
                 flags.append(1)
             if len(bz) == 3:
@@ -174,6 +187,7 @@ def bzs_to_glyph(bzs, glyph):
     glyph.coordinates = _g_l_y_f.GlyphCoordinates(coordinates)
     glyph.flags = flags
     glyph.endPtsOfContours = endPtsOfContours
+
 
 def plot_glyph(font, name, canvas, orig):
     if canvas is None:
@@ -186,9 +200,9 @@ def plot_glyph(font, name, canvas, orig):
     glyph.draw(pen)
 
     if orig:
-        color = CMYKColor(0, 1, 1, 0, alpha=.5)
+        color = CMYKColor(0, 1, 1, 0, alpha=0.5)
     else:
-        color = CMYKColor(0, 0, 0, 1, alpha=.5)
+        color = CMYKColor(0, 0, 0, 1, alpha=0.5)
 
     x0 = 100
     y0 = 100
