@@ -17,17 +17,15 @@
 
 import os
 from setuptools import find_packages, setup, Extension
-from Cython.Build import cythonize
 
 
-extensions = [
-    Extension(
-        "fontcrunch._quadopt",
-        sources=["src/fontcrunch/_quadopt.pyx", "src/fontcrunch/quadopt.cc"],
-        extra_compile_args=["-std=c++11", "-O3"] if os.name == "posix" else [],
-        language="c++",
-    ),
-]
+quadopt = Extension(
+    "fontcrunch._quadopt",
+    sources=["src/fontcrunch/_quadopt.pyx", "src/fontcrunch/quadopt.cc"],
+    extra_compile_args=["-std=c++11", "-O3"] if os.name == "posix" else [],
+    language="c++",
+)
+
 
 setup(
     name="FontCrunch",
@@ -50,7 +48,7 @@ setup(
     extras_require={
         "plot": ["reportlab"],
     },
-    ext_modules=cythonize(extensions),
+    ext_modules=[quadopt],
     entry_points={
         "console_scripts": [
             "font-crunch = fontcrunch.cli:main",

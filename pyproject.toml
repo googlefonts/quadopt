@@ -1,5 +1,0 @@
-[build-system]
-requires = ["setuptools", "wheel", "cython", "setuptools_scm[toml]"]
-
-[tool.setuptools_scm]
-write_to = "src/fontcrunch/_version.py"
