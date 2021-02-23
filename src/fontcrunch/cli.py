@@ -3,22 +3,7 @@ from os import path
 from fontcrunch import optimize
 
 
-def main(args):
-    infile = args.infile
-    outfile = args.outfile
-    plotfile = args.plotfile
-    penalty = args.penalty
-    quiet = args.quiet
-    jobs = args.jobs
-
-    if not outfile:
-        base, ext = path.splitext(infile)
-        outfile = base + "-opt" + ext
-
-    optimize(infile, outfile, plotfile, penalty, quiet, jobs)
-
-
-if __name__ == "__main__":
+def main(args=None):
     parser = argparse.ArgumentParser(description="Optimize TrueType font splines.")
     parser.add_argument("infile", metavar="FILE", help="name of input font to process")
     parser.add_argument(
@@ -36,8 +21,20 @@ if __name__ == "__main__":
     parser.add_argument(
         "-q", dest="quiet", action="store_true", help="don't print messages to stdout"
     )
+    args = parser.parse_args(args)
 
-    main(parser.parse_args())
+    infile = args.infile
+    outfile = args.outfile
+    plotfile = args.plotfile
+    penalty = args.penalty
+    quiet = args.quiet
+    jobs = args.jobs
+
+    if not outfile:
+        base, ext = path.splitext(infile)
+        outfile = base + "-opt" + ext
+
+    optimize(infile, outfile, plotfile, penalty, quiet, jobs)
 
 
 if __name__ == "__main__":

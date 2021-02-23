@@ -5,6 +5,12 @@ from multiprocessing import Pool
 from .fontcrunch import optimize_glyph, plot_glyph
 
 
+try:
+    from ._version import version as __version__
+except ImportError:
+    __version__ = "0.0.0+unknown"
+
+
 def _optimize(args):
     font, name, pdf, penalty, quiet = args
     if not quiet:

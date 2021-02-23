@@ -15,23 +15,28 @@
 #
 # See AUTHORS.txt for the list of Authors and LICENSE.txt for the License.
 
-from setuptools import setup, Extension
+import os
+from setuptools import find_packages, setup, Extension
+from Cython.Build import cythonize
 
-quadopt = Extension(
-    "fontcrunch._quadopt",
-    sources=["fontcrunch/quadopt.i", "fontcrunch/quadopt.cc"],
-    swig_opts=["-c++", "-modern"],
-    extra_compile_args=["-std=c++11", "-O3"],
-)
+
+extensions = [
+    Extension(
+        "fontcrunch._quadopt",
+        sources=["src/fontcrunch/_quadopt.pyx", "src/fontcrunch/quadopt.cc"],
+        extra_compile_args=["-std=c++11", "-O3"] if os.name == "posix" else [],
+        language="c++",
+    ),
+]
 
 setup(
     name="FontCrunch",
-    version="0.1",
+    use_scm_version={"write_to": "src/fontcrunch/_version.py"},
     url="https://github.com/googlefonts/fontcrunch/",
     description="fontcrunch",
     author="Raph Levien",
-    packages=["fontcrunch"],
-    scripts=["tools/font-crunch"],
+    package_dir={"": "src"},
+    packages=find_packages("src"),
     zip_safe=False,
     classifiers=[
         "Environment :: Console",
@@ -40,6 +45,15 @@ setup(
         "Operating System :: OS Independent",
         "Programming Language :: Python",
     ],
-    ext_modules=[quadopt],
-    py_modules=["fontcrunch.quadopt"],
+    setup_requires=["cython", "setuptools_scm"],
+    install_requires=["fonttools"],
+    extras_require={
+        "plot": ["reportlab"],
+    },
+    ext_modules=cythonize(extensions),
+    entry_points={
+        "console_scripts": [
+            "font-crunch = fontcrunch.cli:main",
+        ]
+    },
 )

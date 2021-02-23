@@ -21,7 +21,7 @@ from fontTools.pens.basePen import BasePen
 from fontTools.ttLib.tables import _g_l_y_f
 import math
 
-from . import quadopt
+from . import _quadopt as quadopt
 
 
 class PDFPen(BasePen):

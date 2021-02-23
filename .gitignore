@@ -32,3 +32,4 @@ dist/
 .eggs/
 *.egg-info/
 src/fontcrunch/_version.py
+src/fontcrunch/_quadopt.cpp
